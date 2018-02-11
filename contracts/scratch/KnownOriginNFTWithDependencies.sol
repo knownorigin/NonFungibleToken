@@ -342,6 +342,8 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
     // creates and owns the original assets
     // all primary purchases transfered to this account
     address public curator;
+    uint256 public totalPurchaseValueInWei;
+    uint256 public totalNumberOfPurchases;
 
     enum PurchaseState { Unpurchased, CryptoPurchase, FiatPurchase }
 
@@ -448,6 +450,9 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
             // now purchased - don't allow re-purchase!
             tokenIdToPurchased[_tokenId] = PurchaseState.CryptoPurchase;
 
+            totalPurchaseValueInWei += msg.value;
+            totalNumberOfPurchases += 1;
+
             // send ether to owner instantly
             curator.transfer(msg.value);
 
@@ -469,8 +474,31 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
         // now purchased - don't allow re-purchase!
         tokenIdToPurchased[_tokenId] = PurchaseState.FiatPurchase;
 
+        totalNumberOfPurchases += 1;
+
         PurchasedWithFiat(_tokenId);
 
         return true;
+    }
+
+    function knownOriginNFTData(uint _tokenId)
+    public
+    view
+    returns (
+    uint256 _tokId,
+    address _owner,
+    string _metadata,
+    string _edition,
+    PurchaseState _purchaseState,
+    uint256 _priceInWei
+    ) {
+        return (
+        _tokenId,
+        tokenIdToOwner[_tokenId],
+        tokenIdToMetadata[_tokenId],
+        tokenIdToEdition[_tokenId],
+        tokenIdToPurchased[_tokenId],
+        tokenIdToPriceInWei[_tokenId]
+        );
     }
 }

@@ -13,12 +13,14 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
     // creates and owns the original assets
     // all primary purchases transfered to this account
     address public curator;
+    uint256 public totalPurchaseValueInWei;
+    uint256 public totalNumberOfPurchases;
 
     enum PurchaseState { Unpurchased, CryptoPurchase, FiatPurchase }
 
     mapping(uint => PurchaseState) internal tokenIdToPurchased;
     mapping(uint => string) internal tokenIdToEdition;
-    mapping(uint => uint) internal tokenIdToPriceInWei;
+    mapping(uint => uint256) internal tokenIdToPriceInWei;
 
     event Purchased(uint256 indexed _tokenId, address indexed _buyer);
     event PurchasedWithFiat(uint256 indexed _tokenId);
@@ -45,17 +47,28 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
         symbol = "KOA";
     }
 
-    function mint(string _metadata, string _edition, uint8 _totalEdition, uint256 _priceInWei)
+    function mintEdition(string _metadata, string _edition, uint8 _totalEdition, uint256 _priceInWei)
     public
     onlyCurator {
 
+        var offset = numTokensTotal;
         for (uint8 i = 0; i < _totalEdition; i++) {
-            var _tokenId = i;
+            var _tokenId = offset + i;
             require(tokenIdToOwner[_tokenId] == address(0));
             _mint(msg.sender, _tokenId, _metadata);
             tokenIdToEdition[_tokenId] = _edition;
             tokenIdToPriceInWei[_tokenId] = _priceInWei;
         }
+    }
+
+    function mint(string _metadata, string _edition, uint256 _priceInWei)
+    public
+    onlyCurator {
+        var _tokenId = numTokensTotal;
+        require(tokenIdToOwner[_tokenId] == address(0));
+        _mint(msg.sender, _tokenId, _metadata);
+        tokenIdToEdition[_tokenId] = _edition;
+        tokenIdToPriceInWei[_tokenId] = _priceInWei;
     }
 
     function isPurchased(uint256 _tokenId)
@@ -75,7 +88,7 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
     function priceOfInWei(uint _tokenId)
     public
     view
-    returns (uint _edition) {
+    returns (uint256 _priceInWei) {
         return tokenIdToPriceInWei[_tokenId];
     }
 
@@ -108,6 +121,9 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
             // now purchased - don't allow re-purchase!
             tokenIdToPurchased[_tokenId] = PurchaseState.CryptoPurchase;
 
+            totalPurchaseValueInWei += msg.value;
+            totalNumberOfPurchases += 1;
+
             // send ether to owner instantly
             curator.transfer(msg.value);
 
@@ -129,8 +145,31 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
         // now purchased - don't allow re-purchase!
         tokenIdToPurchased[_tokenId] = PurchaseState.FiatPurchase;
 
+        totalNumberOfPurchases += 1;
+
         PurchasedWithFiat(_tokenId);
 
         return true;
+    }
+
+    function knownOriginNFTData(uint _tokenId)
+    public
+    view
+    returns (
+    uint256 _tokId,
+    address _owner,
+    string _metadata,
+    string _edition,
+    PurchaseState _purchaseState,
+    uint256 _priceInWei
+    ) {
+        return (
+        _tokenId,
+        tokenIdToOwner[_tokenId],
+        tokenIdToMetadata[_tokenId],
+        tokenIdToEdition[_tokenId],
+        tokenIdToPurchased[_tokenId],
+        tokenIdToPriceInWei[_tokenId]
+        );
     }
 }
