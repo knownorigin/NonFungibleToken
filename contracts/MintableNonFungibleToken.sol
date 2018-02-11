@@ -21,7 +21,7 @@ contract MintableNonFungibleToken is NonFungibleToken {
     }
 
     function mint(address _owner, uint256 _tokenId)
-        public
+        internal
         onlyNonexistentToken(_tokenId)
     {
         _setTokenOwner(_tokenId, _owner);
