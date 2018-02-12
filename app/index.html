@@ -95,7 +95,7 @@
             knownOriginDigitalAsset.assetInfo(i).then(function (result) {
                 console.log(result);
                 var liEl = '<li>';
-                liEl += 'Token #: ' + result[0].toString();
+                liEl += 'Token #: <strong>' + result[0].toString() + '</strong>';
                 liEl += '<br/>Owner: ' + result[1].toString();
                 liEl += '<br/>Edition: ' + result[3].toString();
                 liEl += '<br/>Sold: ' + (result[4].toString() !== '0');
