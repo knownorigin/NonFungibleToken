@@ -4,25 +4,26 @@ import "./InternalMintableNonFungibleToken.sol";
 
 
 /**
- * @title KnownOriginNFT
+ * @title KnownOriginDigitalAsset
  *
  * A curator can mint digital assets and sell them via purchases (crypto via Ether or Fiat)
  */
-contract KnownOriginNFT is InternalMintableNonFungibleToken {
+contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
+    using SafeMath for uint;
 
     // creates and owns the original assets
-    // all primary purchases transfered to this account
+    // all primary purchases transferred to this account
     address public curator;
     uint256 public totalPurchaseValueInWei;
-    uint256 public totalNumberOfPurchases;
+    uint public totalNumberOfPurchases;
 
-    enum PurchaseState { Unpurchased, CryptoPurchase, FiatPurchase }
+    enum PurchaseState { Unsold, EtherPurchase, FiatPurchase }
 
     mapping(uint => PurchaseState) internal tokenIdToPurchased;
     mapping(uint => string) internal tokenIdToEdition;
     mapping(uint => uint256) internal tokenIdToPriceInWei;
 
-    event Purchased(uint256 indexed _tokenId, address indexed _buyer);
+    event PurchasedWithEther(uint256 indexed _tokenId, address indexed _buyer);
     event PurchasedWithFiat(uint256 indexed _tokenId);
 
     modifier onlyCurator() {
@@ -31,7 +32,7 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
     }
 
     modifier onlyUnpurchased(uint256 _tokenId) {
-        require(tokenIdToPurchased[_tokenId] == PurchaseState.Unpurchased);
+        require(tokenIdToPurchased[_tokenId] == PurchaseState.Unsold);
         _;
     }
 
@@ -40,11 +41,11 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
         _;
     }
 
-    function KnownOriginNFT()
+    function KnownOriginDigitalAsset()
     public {
         curator = msg.sender;
-        name = "KnownOriginNFT";
-        symbol = "KOA";
+        name = "KnownOriginDigitalAsset";
+        symbol = "KODA";
     }
 
     function mintEdition(string _metadata, string _edition, uint8 _totalEdition, uint256 _priceInWei)
@@ -119,15 +120,15 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
             transferFrom(curator, msg.sender, _tokenId);
 
             // now purchased - don't allow re-purchase!
-            tokenIdToPurchased[_tokenId] = PurchaseState.CryptoPurchase;
+            tokenIdToPurchased[_tokenId] = PurchaseState.EtherPurchase;
 
-            totalPurchaseValueInWei += msg.value;
-            totalNumberOfPurchases += 1;
+            totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
+            totalNumberOfPurchases = totalNumberOfPurchases.add(1);
 
             // send ether to owner instantly
             curator.transfer(msg.value);
 
-            Purchased(_tokenId, msg.sender);
+            PurchasedWithEther(_tokenId, msg.sender);
 
             return true;
         }
@@ -145,7 +146,7 @@ contract KnownOriginNFT is InternalMintableNonFungibleToken {
         // now purchased - don't allow re-purchase!
         tokenIdToPurchased[_tokenId] = PurchaseState.FiatPurchase;
 
-        totalNumberOfPurchases += 1;
+        totalNumberOfPurchases = totalNumberOfPurchases.add(1);
 
         PurchasedWithFiat(_tokenId);
 
