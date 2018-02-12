@@ -482,7 +482,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         return true;
     }
 
-    function knownOriginNFTData(uint _tokenId)
+    function assetInfo(uint _tokenId)
     public
     view
     returns (

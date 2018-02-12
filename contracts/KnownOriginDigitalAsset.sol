@@ -1,5 +1,6 @@
 pragma solidity 0.4.18;
 
+
 import "./InternalMintableNonFungibleToken.sol";
 
 
@@ -12,18 +13,23 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     using SafeMath for uint;
 
     // creates and owns the original assets
-    // all primary purchases transferred to this account
+    // all primary purchases transfered to this account
     address public curator;
+
     uint256 public totalPurchaseValueInWei;
+
     uint public totalNumberOfPurchases;
 
-    enum PurchaseState { Unsold, EtherPurchase, FiatPurchase }
+    enum PurchaseState {Unsold, EtherPurchase, FiatPurchase}
 
-    mapping(uint => PurchaseState) internal tokenIdToPurchased;
-    mapping(uint => string) internal tokenIdToEdition;
-    mapping(uint => uint256) internal tokenIdToPriceInWei;
+    mapping (uint => PurchaseState) internal tokenIdToPurchased;
+
+    mapping (uint => string) internal tokenIdToEdition;
+
+    mapping (uint => uint256) internal tokenIdToPriceInWei;
 
     event PurchasedWithEther(uint256 indexed _tokenId, address indexed _buyer);
+
     event PurchasedWithFiat(uint256 indexed _tokenId);
 
     modifier onlyCurator() {
@@ -153,7 +159,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         return true;
     }
 
-    function knownOriginNFTData(uint _tokenId)
+    function assetInfo(uint _tokenId)
     public
     view
     returns (
