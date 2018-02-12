@@ -343,6 +343,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     // creates and owns the original assets
     // all primary purchases transfered to this account
     address public curator;
+
     uint256 public totalPurchaseValueInWei;
     uint public totalNumberOfPurchases;
 
@@ -432,7 +433,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         return true;
     }
 
-    function purchase(uint _tokenId)
+    function purchaseWithEther(uint _tokenId)
     public
     payable
     onlyUnpurchased(_tokenId)
@@ -465,7 +466,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         return false;
     }
 
-    function fiatPurchase(uint _tokenId)
+    function purchaseWithFiat(uint _tokenId)
     public
     onlyCurator
     onlyUnpurchased(_tokenId)

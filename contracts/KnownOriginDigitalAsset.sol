@@ -17,19 +17,15 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     address public curator;
 
     uint256 public totalPurchaseValueInWei;
-
     uint public totalNumberOfPurchases;
 
-    enum PurchaseState {Unsold, EtherPurchase, FiatPurchase}
+    enum PurchaseState { Unsold, EtherPurchase, FiatPurchase }
 
-    mapping (uint => PurchaseState) internal tokenIdToPurchased;
-
-    mapping (uint => string) internal tokenIdToEdition;
-
-    mapping (uint => uint256) internal tokenIdToPriceInWei;
+    mapping(uint => PurchaseState) internal tokenIdToPurchased;
+    mapping(uint => string) internal tokenIdToEdition;
+    mapping(uint => uint256) internal tokenIdToPriceInWei;
 
     event PurchasedWithEther(uint256 indexed _tokenId, address indexed _buyer);
-
     event PurchasedWithFiat(uint256 indexed _tokenId);
 
     modifier onlyCurator() {
@@ -109,7 +105,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         return true;
     }
 
-    function purchase(uint _tokenId)
+    function purchaseWithEther(uint _tokenId)
     public
     payable
     onlyUnpurchased(_tokenId)
@@ -142,7 +138,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         return false;
     }
 
-    function fiatPurchase(uint _tokenId)
+    function purchaseWithFiat(uint _tokenId)
     public
     onlyCurator
     onlyUnpurchased(_tokenId)
