@@ -1,10 +1,10 @@
 
 # KnownOriginDigitalAsset
-------------
 
 Characteristics of [KnownOriginDigitalAsset](https://github.com/knownorigin/NonFungibleToken/blob/master/contracts/KnownOriginDigitalAsset.sol): 
 
 * Curator of collection is the only person who can mint digital assets
+* ERC721 compliant
 * A digital asset that can be purchased
 * A digital asset that can be transferred once purchased
 * A digital asset with attached metadata
@@ -12,7 +12,7 @@ Characteristics of [KnownOriginDigitalAsset](https://github.com/knownorigin/NonF
 
 
 ------------
-Forkeed from [Dharma Protocol's NonFungibleToken](https://github.com/dharmaprotocol/NonFungibleToken). See below:
+Forked from [Dharma Protocol's NonFungibleToken](https://github.com/dharmaprotocol/NonFungibleToken). See below:
 
 ## Non-Fungible Token (ERC721) Generic Implementation
 
