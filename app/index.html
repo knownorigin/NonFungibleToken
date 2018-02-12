@@ -25,6 +25,12 @@
             font-size: 2em;
         }
 
+        h2 {
+            color: gray;
+            text-align: center;
+            font-size: 1em;
+        }
+
         p {
             font-size: 0.8em;
         }
@@ -45,11 +51,14 @@
 
 <div id="app">
     <h1>KnownOrigin Explorer</h1>
+    <h2>Address: 0x73e56d397E7e571C9FBB3DC9aE1D206851025908</h2>
+    <hr/>
     <div id="overview"></div>
-    <div id="total_items"></div>
+    <hr/>
     <div id="entity_list">
         <ul></ul>
     </div>
+    <hr/>
     <p class="mute">Open developer tools and view console for logging</p>
 </div>
 
@@ -59,208 +68,39 @@
 <script>
     var eth = new window.Eth(new window.Eth.HttpProvider('https://ropsten.infura.io'));
 
-    eth.getBlockByNumber(45300, true, function (err, block) {
-        console.log(err);
-        console.log(block);
-    });
+    var address = '0x73e56d397E7e571C9FBB3DC9aE1D206851025908';
 
-    var address = '0xc353f05599f832062964aa4f4f2f2398c7986b49';
-
-    var abi = [{"constant": true, "inputs": [], "name": "name", "outputs": [{"name": "_name", "type": "string"}], "payable": false, "stateMutability": "view", "type": "function"}, {
-        "constant": true,
-        "inputs": [{"name": "_tokenId", "type": "uint256"}],
-        "name": "getApproved",
-        "outputs": [{"name": "_approved", "type": "address"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }, {
-        "constant": false,
-        "inputs": [{"name": "_to", "type": "address"}, {"name": "_tokenId", "type": "uint256"}],
-        "name": "approve",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }, {
-        "constant": true,
-        "inputs": [],
-        "name": "implementsERC721",
-        "outputs": [{"name": "_implementsERC721", "type": "bool"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }, {
-        "constant": true,
-        "inputs": [],
-        "name": "totalSupply",
-        "outputs": [{"name": "_totalSupply", "type": "uint256"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }, {
-        "constant": false,
-        "inputs": [{"name": "_from", "type": "address"}, {"name": "_to", "type": "address"}, {"name": "_tokenId", "type": "uint256"}],
-        "name": "transferFrom",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }, {
-        "constant": true,
-        "inputs": [{"name": "_tokenId", "type": "uint256"}],
-        "name": "isPurchased",
-        "outputs": [{"name": "_purchased", "type": "uint8"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }, {
-        "constant": true,
-        "inputs": [{"name": "_owner", "type": "address"}, {"name": "_index", "type": "uint256"}],
-        "name": "tokenOfOwnerByIndex",
-        "outputs": [{"name": "_tokenId", "type": "uint256"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }, {
-        "constant": false,
-        "inputs": [{"name": "_metadata", "type": "string"}, {"name": "_edition", "type": "string"}, {"name": "_totalEdition", "type": "uint8"}, {"name": "_priceInWei", "type": "uint256"}],
-        "name": "mintEdition",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }, {
-        "constant": true,
-        "inputs": [{"name": "_tokenId", "type": "uint256"}],
-        "name": "editionOf",
-        "outputs": [{"name": "_edition", "type": "string"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }, {
-        "constant": true,
-        "inputs": [{"name": "_tokenId", "type": "uint256"}],
-        "name": "ownerOf",
-        "outputs": [{"name": "_owner", "type": "address"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }, {
-        "constant": true,
-        "inputs": [{"name": "_tokenId", "type": "uint256"}],
-        "name": "tokenMetadata",
-        "outputs": [{"name": "_infoUrl", "type": "string"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }, {
-        "constant": true,
-        "inputs": [{"name": "_owner", "type": "address"}],
-        "name": "balanceOf",
-        "outputs": [{"name": "_balance", "type": "uint256"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }, {
-        "constant": false,
-        "inputs": [{"name": "_tokenId", "type": "uint256"}, {"name": "_priceInWei", "type": "uint256"}],
-        "name": "setPriceInWei",
-        "outputs": [{"name": "", "type": "bool"}],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }, {
-        "constant": false,
-        "inputs": [{"name": "_tokenId", "type": "uint256"}],
-        "name": "fiatPurchase",
-        "outputs": [{"name": "", "type": "bool"}],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }, {"constant": true, "inputs": [], "name": "symbol", "outputs": [{"name": "_symbol", "type": "string"}], "payable": false, "stateMutability": "view", "type": "function"}, {
-        "constant": true,
-        "inputs": [{"name": "_tokenId", "type": "uint256"}],
-        "name": "priceOfInWei",
-        "outputs": [{"name": "_priceInWei", "type": "uint256"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }, {
-        "constant": false,
-        "inputs": [{"name": "_to", "type": "address"}, {"name": "_tokenId", "type": "uint256"}],
-        "name": "transfer",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }, {"constant": true, "inputs": [], "name": "numTokensTotal", "outputs": [{"name": "", "type": "uint256"}], "payable": false, "stateMutability": "view", "type": "function"}, {
-        "constant": false,
-        "inputs": [{"name": "_metadata", "type": "string"}, {"name": "_edition", "type": "string"}, {"name": "_priceInWei", "type": "uint256"}],
-        "name": "mint",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }, {
-        "constant": true,
-        "inputs": [{"name": "_owner", "type": "address"}],
-        "name": "getOwnerTokens",
-        "outputs": [{"name": "_tokenIds", "type": "uint256[]"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }, {"constant": true, "inputs": [], "name": "curator", "outputs": [{"name": "", "type": "address"}], "payable": false, "stateMutability": "view", "type": "function"}, {
-        "constant": false,
-        "inputs": [{"name": "_tokenId", "type": "uint256"}],
-        "name": "purchase",
-        "outputs": [{"name": "", "type": "bool"}],
-        "payable": true,
-        "stateMutability": "payable",
-        "type": "function"
-    }, {"inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor"}, {
-        "anonymous": false,
-        "inputs": [{"indexed": true, "name": "_tokenId", "type": "uint256"}, {"indexed": true, "name": "_buyer", "type": "address"}],
-        "name": "Purchased",
-        "type": "event"
-    }, {"anonymous": false, "inputs": [{"indexed": true, "name": "_tokenId", "type": "uint256"}], "name": "PurchasedWithFiat", "type": "event"}, {
-        "anonymous": false,
-        "inputs": [{"indexed": true, "name": "_to", "type": "address"}, {"indexed": true, "name": "_tokenId", "type": "uint256"}],
-        "name": "Mint",
-        "type": "event"
-    }, {
-        "anonymous": false,
-        "inputs": [{"indexed": true, "name": "_from", "type": "address"}, {"indexed": true, "name": "_to", "type": "address"}, {"indexed": false, "name": "_tokenId", "type": "uint256"}],
-        "name": "Transfer",
-        "type": "event"
-    }, {
-        "anonymous": false,
-        "inputs": [{"indexed": true, "name": "_owner", "type": "address"}, {"indexed": true, "name": "_approved", "type": "address"}, {"indexed": false, "name": "_tokenId", "type": "uint256"}],
-        "name": "Approval",
-        "type": "event"
-    }];
+    var abi = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"_name","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"name":"_approved","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_tokenId","type":"uint256"}],"name":"approve","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"implementsERC721","outputs":[{"name":"_implementsERC721","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"_totalSupply","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"purchaseWithFiat","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalPurchaseValueInWei","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"isPurchased","outputs":[{"name":"_purchased","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_index","type":"uint256"}],"name":"tokenOfOwnerByIndex","outputs":[{"name":"_tokenId","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_metadata","type":"string"},{"name":"_edition","type":"string"},{"name":"_totalEdition","type":"uint8"},{"name":"_priceInWei","type":"uint256"}],"name":"mintEdition","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalNumberOfPurchases","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"editionOf","outputs":[{"name":"_edition","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"name":"_owner","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"tokenMetadata","outputs":[{"name":"_infoUrl","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"_balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"},{"name":"_priceInWei","type":"uint256"}],"name":"setPriceInWei","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"_symbol","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"priceOfInWei","outputs":[{"name":"_priceInWei","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"assetInfo","outputs":[{"name":"_tokId","type":"uint256"},{"name":"_owner","type":"address"},{"name":"_metadata","type":"string"},{"name":"_edition","type":"string"},{"name":"_purchaseState","type":"uint8"},{"name":"_priceInWei","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_tokenId","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"numTokensTotal","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_metadata","type":"string"},{"name":"_edition","type":"string"},{"name":"_priceInWei","type":"uint256"}],"name":"mint","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"getOwnerTokens","outputs":[{"name":"_tokenIds","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"curator","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_tokenId","type":"uint256"}],"name":"purchaseWithEther","outputs":[{"name":"","type":"bool"}],"payable":true,"stateMutability":"payable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_tokenId","type":"uint256"},{"indexed":true,"name":"_buyer","type":"address"}],"name":"PurchasedWithEther","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_tokenId","type":"uint256"}],"name":"PurchasedWithFiat","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_to","type":"address"},{"indexed":true,"name":"_tokenId","type":"uint256"}],"name":"Mint","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_approved","type":"address"},{"indexed":false,"name":"_tokenId","type":"uint256"}],"name":"Approval","type":"event"}];
 
     console.log('Instantiating contract at ' + address);
     console.log('Contract ABI ' + abi);
 
-    var knownOriginNft = eth.contract(abi).at(address);
-    console.log(knownOriginNft);
+    var knownOriginDigitalAsset = eth.contract(abi).at(address);
+    console.log(knownOriginDigitalAsset);
 
-    ['name', 'curator', 'totalSupply', 'symbol'].forEach(function (readOnlyFunc) {
-        knownOriginNft[readOnlyFunc]().then(function (result) {
+    ['name', 'curator', 'totalSupply', 'symbol', 'totalPurchaseValueInWei', 'totalNumberOfPurchases'].forEach(function (readOnlyFunc) {
+        knownOriginDigitalAsset[readOnlyFunc]().then(function (result) {
             console.log(readOnlyFunc + ' >> ' + result[0].toString());
             $('#overview').append('<p>' + readOnlyFunc + ': <strong>' + result[0].toString() + '</strong></p>');
         });
     });
 
-    knownOriginNft.totalSupply().then(function (result) {
+    knownOriginDigitalAsset.totalSupply().then(function (result) {
         var totalSupply = result[0].toString();
         var totalSupplyArray = new Array(parseInt(totalSupply));
 
         for (var i = 0; i < totalSupplyArray.length; i++) {
-            knownOriginNft.tokenMetadata(i).then(function (result) {
-                console.log(i + ': ' + result[0].toString());
-                $('#entity_list ul').append('<li><img class="metadata" src="https://ipfs.infura.io/ipfs/' + result[0].toString() + '"/></li>');
+            knownOriginDigitalAsset.assetInfo(i).then(function (result) {
+                console.log(result);
+                var liEl = '<li>';
+                liEl += 'Token #: ' + result[0].toString();
+                liEl += '<br/>Owner: ' + result[1].toString();
+                liEl += '<br/>Edition: ' + result[3].toString();
+                liEl += '<br/>Sold: ' + (result[4].toString() !== '0');
+                liEl += '<br/>Price (in wei): ' + result[5].toString();
+                liEl += '<br/><img class="metadata" src="https://ipfs.infura.io/ipfs/' + result[2].toString() + '"/>';
+                liEl += '</li>';
+                $('#entity_list ul').append(liEl);
             });
         }
     });
