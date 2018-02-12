@@ -1,6 +1,18 @@
-<img src="https://s3-us-west-2.amazonaws.com/dharma-assets/logo+orange.png"  width=300/>
+
+# KnownOriginDigitalAsset
+------------
+
+Characteristics of [KnownOriginDigitalAsset](https://github.com/knownorigin/NonFungibleToken/blob/master/contracts/KnownOriginDigitalAsset.sol): 
+
+* Curator of collection is the only person who can mint digital assets
+* A digital asset that can be purchased
+* A digital asset that can be transferred once purchased
+* A digital asset with attached metadata
+* A digital asset that can be minted in limited editions or as a single asset
+
 
 ------------
+Forkeed from [Dharma Protocol's NonFungibleToken](https://github.com/dharmaprotocol/NonFungibleToken). See below:
 
 ## Non-Fungible Token (ERC721) Generic Implementation
 
@@ -35,7 +47,3 @@ Run `truffle` tests:
 ```
 npm test
 ```
-
-##### Contributing
-
-Please adhere to [these steps](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/) in constructing pull requests to this repository.
