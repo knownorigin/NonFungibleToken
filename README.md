@@ -1,6 +1,5 @@
 
 # KnownOriginDigitalAsset
-------------
 
 Characteristics of [KnownOriginDigitalAsset](https://github.com/knownorigin/NonFungibleToken/blob/master/contracts/KnownOriginDigitalAsset.sol): 
 
@@ -12,7 +11,7 @@ Characteristics of [KnownOriginDigitalAsset](https://github.com/knownorigin/NonF
 
 
 ------------
-Forkeed from [Dharma Protocol's NonFungibleToken](https://github.com/dharmaprotocol/NonFungibleToken). See below:
+Forked from [Dharma Protocol's NonFungibleToken](https://github.com/dharmaprotocol/NonFungibleToken). See below:
 
 ## Non-Fungible Token (ERC721) Generic Implementation
 
