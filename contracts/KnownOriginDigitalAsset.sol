@@ -1,14 +1,3 @@
-pragma solidity 0.4.18;
-
-
-import "./InternalMintableNonFungibleToken.sol";
-
-
-/**
- * @title KnownOriginDigitalAsset
- *
- * A curator can mint digital assets and sell them via purchases (crypto via Ether or Fiat)
- */
 contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     using SafeMath for uint;
 
@@ -23,6 +12,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
 
     mapping(uint => PurchaseState) internal tokenIdToPurchased;
     mapping(uint => string) internal tokenIdToEdition;
+    mapping(uint => uint8) internal tokenIdToEditionNumber;
     mapping(uint => uint256) internal tokenIdToPriceInWei;
 
     event PurchasedWithEther(uint256 indexed _tokenId, address indexed _buyer);
@@ -60,6 +50,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
             require(tokenIdToOwner[_tokenId] == address(0));
             _mint(msg.sender, _tokenId, _metadata);
             tokenIdToEdition[_tokenId] = _edition;
+            tokenIdToEditionNumber[_tokenId] = i + 1;
             tokenIdToPriceInWei[_tokenId] = _priceInWei;
         }
     }
@@ -71,6 +62,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         require(tokenIdToOwner[_tokenId] == address(0));
         _mint(msg.sender, _tokenId, _metadata);
         tokenIdToEdition[_tokenId] = _edition;
+        tokenIdToEditionNumber[_tokenId] = 1;
         tokenIdToPriceInWei[_tokenId] = _priceInWei;
     }
 
@@ -163,6 +155,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     address _owner,
     string _metadata,
     string _edition,
+    uint8 _editionNo,
     PurchaseState _purchaseState,
     uint256 _priceInWei
     ) {
@@ -171,6 +164,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         tokenIdToOwner[_tokenId],
         tokenIdToMetadata[_tokenId],
         tokenIdToEdition[_tokenId],
+        tokenIdToEditionNumber[_tokenId],
         tokenIdToPurchased[_tokenId],
         tokenIdToPriceInWei[_tokenId]
         );
