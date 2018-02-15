@@ -2,3 +2,5 @@ node_modules/
 transpiled/
 types/generated/
 build/
+/.idea/
+/npm-debug.log

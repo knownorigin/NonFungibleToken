@@ -9,9 +9,14 @@ import "./InternalMintableNonFungibleToken.sol";
 contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     using SafeMath for uint;
 
-    // creates and owns the original assets
-    // all primary purchases transferred to this account
+    // creates and owns the original assets all primary purchases transferred to this account
     address public curator;
+
+    // the person who is responsible for designing and building the contract
+    address public contractDeveloper;
+
+    // the person who puts on the event
+    address public commissionAccount;
 
     uint256 public totalPurchaseValueInWei;
     uint public totalNumberOfPurchases;
@@ -41,9 +46,11 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         _;
     }
 
-    function KnownOriginDigitalAsset()
+    function KnownOriginDigitalAsset(address _commissionAccount, address _contractDeveloper)
     public {
         curator = msg.sender;
+        contractDeveloper = _contractDeveloper;
+        commissionAccount = _commissionAccount;
         name = "KnownOriginDigitalAsset";
         symbol = "KODA";
     }
@@ -52,9 +59,9 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     public
     onlyCurator {
 
-        var offset = numTokensTotal;
+        uint offset = numTokensTotal;
         for (uint8 i = 0; i < _totalEdition; i++) {
-            var _tokenId = offset + i;
+            uint _tokenId = offset + i;
             require(tokenIdToOwner[_tokenId] == address(0));
             _mint(msg.sender, _tokenId, _metadata);
             tokenIdToEdition[_tokenId] = _edition;
@@ -66,7 +73,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     function mint(string _metadata, string _edition, uint256 _priceInWei)
     public
     onlyCurator {
-        var _tokenId = numTokensTotal;
+        uint _tokenId = numTokensTotal;
         require(tokenIdToOwner[_tokenId] == address(0));
         _mint(msg.sender, _tokenId, _metadata);
         tokenIdToEdition[_tokenId] = _edition;
@@ -127,8 +134,19 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
             totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
             totalNumberOfPurchases = totalNumberOfPurchases.add(1);
 
+            // split & transfer 15% fee for curator
+            uint commissionAccountFee = msg.value / 100 * 15;
+            commissionAccount.transfer(commissionAccountFee);
+
+            // split out 15% fee for creator of the contract
+            uint contractDeveloperFee = msg.value / 100 * 15;
+            contractDeveloper.transfer(contractDeveloperFee);
+
+            // final payment to curator would be 70% of initial price
+            uint curatorTotal = msg.value - (commissionAccountFee + contractDeveloperFee);
+
             // send ether to owner instantly
-            curator.transfer(msg.value);
+            curator.transfer(curatorTotal);
 
             PurchasedWithEther(_tokenId, msg.sender);
 
