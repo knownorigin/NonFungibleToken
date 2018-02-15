@@ -2,7 +2,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     using SafeMath for uint;
 
     // creates and owns the original assets
-    // all primary purchases transfered to this account
+    // all primary purchases transferred to this account
     address public curator;
 
     uint256 public totalPurchaseValueInWei;
