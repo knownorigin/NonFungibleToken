@@ -1,3 +1,11 @@
+pragma solidity 0.4.18;
+import "./InternalMintableNonFungibleToken.sol";
+
+/**
+* @title KnownOriginDigitalAsset
+*
+* A curator can mint digital assets and sell them via purchases (crypto via Ether or Fiat)
+*/
 contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     using SafeMath for uint;
 
