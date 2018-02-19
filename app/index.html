@@ -75,7 +75,7 @@
             <p><span class="mute">Sold: </span>{{ k.sold }}</p>
             <p><span class="mute">Price (in Wei): </span>{{ k.priceInWei }}</p>
             <p><span class="mute">Price (in ETH): </span>{{ k.priceInEther }}</p>
-            <p><span class="mute">Price (in GBP): </span>{{ k.priceInGBP }}</p>
+            <p><span class="mute">Approx. Price (in GBP): </span>{{ k.priceInGBP }}</p>
             <p><span class="mute">Owner: </span>{{ k.owner }}</p>
 
         </div>
@@ -131,7 +131,7 @@
                         let responseBody = response.body;
                         let currentPriceOfOneEtherInGbp = responseBody[0].price_gbp;
 
-                        let result =  currentPriceOfOneEtherInGbp * totalEther
+                        let result =  currentPriceOfOneEtherInGbp * totalEther;
                         return result;
                     }, (response) => {
                         console.error(response);
@@ -174,5 +174,3 @@
 </body>
 
 </html>
-
-<!--                        liEl += '<br/><img class="metadata" src="https://ipfs.infura.io/ipfs/' + result[2].toString() + '"/>'; -->
