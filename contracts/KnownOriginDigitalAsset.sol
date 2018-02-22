@@ -27,6 +27,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     mapping(uint => string) internal tokenIdToEdition;
     mapping(uint => uint8) internal tokenIdToEditionNumber;
     mapping(uint => uint256) internal tokenIdToPriceInWei;
+    mapping(uint => uint256) internal tokenIdToBuyFromDate;
 
     event PurchasedWithEther(uint256 indexed _tokenId, address indexed _buyer);
     event PurchasedWithFiat(uint256 indexed _tokenId);
@@ -36,13 +37,18 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         _;
     }
 
-    modifier onlyUnpurchased(uint256 _tokenId) {
+    modifier onlyUnsold(uint256 _tokenId) {
         require(tokenIdToPurchased[_tokenId] == PurchaseState.Unsold);
         _;
     }
 
     modifier onlyCuratorOwnedToken(uint256 _tokenId) {
         require(tokenIdToOwner[_tokenId] == curator);
+        _;
+    }
+
+    modifier onlyWhenBuyDateOpen(uint256 _tokenId) {
+        require(tokenIdToBuyFromDate[_tokenId] <= block.timestamp);
         _;
     }
 
@@ -55,7 +61,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         symbol = "KODA";
     }
 
-    function mintEdition(string _metadata, string _edition, uint8 _totalEdition, uint256 _priceInWei)
+    function mintEdition(string _metadata, string _edition, uint8 _totalEdition, uint256 _priceInWei, uint _auctionStartDate)
     public
     onlyCurator {
 
@@ -67,10 +73,11 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
             tokenIdToEdition[_tokenId] = _edition;
             tokenIdToEditionNumber[_tokenId] = i + 1;
             tokenIdToPriceInWei[_tokenId] = _priceInWei;
+            tokenIdToBuyFromDate[_tokenId] = _auctionStartDate;
         }
     }
 
-    function mint(string _metadata, string _edition, uint256 _priceInWei)
+    function mint(string _metadata, string _edition, uint256 _priceInWei, uint _auctionStartDate)
     public
     onlyCurator {
         uint _tokenId = numTokensTotal;
@@ -79,6 +86,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         tokenIdToEdition[_tokenId] = _edition;
         tokenIdToEditionNumber[_tokenId] = 1;
         tokenIdToPriceInWei[_tokenId] = _priceInWei;
+        tokenIdToBuyFromDate[_tokenId] = _auctionStartDate;
     }
 
     function isPurchased(uint256 _tokenId)
@@ -95,6 +103,25 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         return tokenIdToEdition[_tokenId];
     }
 
+    function auctionOpened(uint _tokenId)
+    public
+    view
+    returns (bool) {
+        return tokenIdToBuyFromDate[_tokenId] <= block.timestamp;
+    }
+
+    function tokenAuctionOpenDate(uint _tokenId)
+    public
+    view
+    returns (uint _auctionStartDate) {
+        return tokenIdToBuyFromDate[_tokenId];
+    }
+
+    // Utility function to get current block.timestamp = now() - good for testing with remix/truffle
+    function getNow() public constant returns (uint) {
+        return now;
+    }
+
     function priceOfInWei(uint _tokenId)
     public
     view
@@ -105,7 +132,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     function setPriceInWei(uint _tokenId, uint256 _priceInWei)
     public
     onlyCurator
-    onlyUnpurchased(_tokenId)
+    onlyUnsold(_tokenId)
     onlyCuratorOwnedToken(_tokenId)
     returns (bool) {
         tokenIdToPriceInWei[_tokenId] = _priceInWei;
@@ -115,8 +142,9 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     function purchaseWithEther(uint _tokenId)
     public
     payable
-    onlyUnpurchased(_tokenId)
+    onlyUnsold(_tokenId)
     onlyCuratorOwnedToken(_tokenId)
+    onlyWhenBuyDateOpen(_tokenId)
     returns (bool) {
 
         if (msg.value >= tokenIdToPriceInWei[_tokenId]) {
@@ -133,6 +161,8 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
 
             totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
             totalNumberOfPurchases = totalNumberOfPurchases.add(1);
+
+            // TODO provide config for fee split
 
             // split & transfer 15% fee for curator
             uint commissionAccountFee = msg.value / 100 * 15;
@@ -159,8 +189,9 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     function purchaseWithFiat(uint _tokenId)
     public
     onlyCurator
-    onlyUnpurchased(_tokenId)
+    onlyUnsold(_tokenId)
     onlyCuratorOwnedToken(_tokenId)
+    onlyWhenBuyDateOpen(_tokenId)
     returns (bool) {
 
         // now purchased - don't allow re-purchase!
@@ -173,6 +204,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         return true;
     }
 
+    // Start date not added to avoid "stack to deep" errors - see tokenAuctionOpenDate() for accessor
     function assetInfo(uint _tokenId)
     public
     view
