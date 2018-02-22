@@ -27,7 +27,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     mapping(uint => string) internal tokenIdToEdition;
     mapping(uint => uint8) internal tokenIdToEditionNumber;
     mapping(uint => uint256) internal tokenIdToPriceInWei;
-    mapping(uint => uint256) internal tokenIdToAuctionStartDate;
+    mapping(uint => uint256) internal tokenIdToBuyFromDate;
 
     event PurchasedWithEther(uint256 indexed _tokenId, address indexed _buyer);
     event PurchasedWithFiat(uint256 indexed _tokenId);
@@ -47,8 +47,8 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         _;
     }
 
-    modifier onlyWhenAuctionOpen(uint256 _tokenId) {
-        require(tokenIdToAuctionStartDate[_tokenId] <= block.timestamp);
+    modifier onlyWhenBuyDateOpen(uint256 _tokenId) {
+        require(tokenIdToBuyFromDate[_tokenId] <= block.timestamp);
         _;
     }
 
@@ -73,7 +73,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
             tokenIdToEdition[_tokenId] = _edition;
             tokenIdToEditionNumber[_tokenId] = i + 1;
             tokenIdToPriceInWei[_tokenId] = _priceInWei;
-            tokenIdToAuctionStartDate[_tokenId] = _auctionStartDate;
+            tokenIdToBuyFromDate[_tokenId] = _auctionStartDate;
         }
     }
 
@@ -86,7 +86,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
         tokenIdToEdition[_tokenId] = _edition;
         tokenIdToEditionNumber[_tokenId] = 1;
         tokenIdToPriceInWei[_tokenId] = _priceInWei;
-        tokenIdToAuctionStartDate[_tokenId] = _auctionStartDate;
+        tokenIdToBuyFromDate[_tokenId] = _auctionStartDate;
     }
 
     function isPurchased(uint256 _tokenId)
@@ -107,14 +107,14 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     public
     view
     returns (bool) {
-        return tokenIdToAuctionStartDate[_tokenId] <= block.timestamp;
+        return tokenIdToBuyFromDate[_tokenId] <= block.timestamp;
     }
 
     function tokenAuctionOpenDate(uint _tokenId)
     public
     view
     returns (uint _auctionStartDate) {
-        return tokenIdToAuctionStartDate[_tokenId];
+        return tokenIdToBuyFromDate[_tokenId];
     }
 
     // Utility function to get current block.timestamp = now() - good for testing with remix/truffle
@@ -144,7 +144,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     payable
     onlyUnsold(_tokenId)
     onlyCuratorOwnedToken(_tokenId)
-    onlyWhenAuctionOpen(_tokenId)
+    onlyWhenBuyDateOpen(_tokenId)
     returns (bool) {
 
         if (msg.value >= tokenIdToPriceInWei[_tokenId]) {
@@ -161,6 +161,8 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
 
             totalPurchaseValueInWei = totalPurchaseValueInWei.add(msg.value);
             totalNumberOfPurchases = totalNumberOfPurchases.add(1);
+
+            // TODO provide config for fee split
 
             // split & transfer 15% fee for curator
             uint commissionAccountFee = msg.value / 100 * 15;
@@ -189,7 +191,7 @@ contract KnownOriginDigitalAsset is InternalMintableNonFungibleToken {
     onlyCurator
     onlyUnsold(_tokenId)
     onlyCuratorOwnedToken(_tokenId)
-    onlyWhenAuctionOpen(_tokenId)
+    onlyWhenBuyDateOpen(_tokenId)
     returns (bool) {
 
         // now purchased - don't allow re-purchase!
