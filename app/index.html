@@ -74,6 +74,8 @@
             <p><span class="mute">Edition: </span>{{ k.edition }}</p>
             <p><span class="mute">Sold: </span>{{ k.sold }}</p>
             <p><span class="mute">Price (in Wei): </span>{{ k.priceInWei }}</p>
+            <p><span class="mute">Price (in ETH): </span>{{ k.priceInEther }}</p>
+            <p><span class="mute">Approx. Price (in GBP): </span>{{ k.priceInGBP }}</p>
             <p><span class="mute">Owner: </span>{{ k.owner }}</p>
 
         </div>
@@ -82,6 +84,7 @@
 </div>
 
 <script src="https://unpkg.com/vue/dist/vue.js" type="text/javascript"></script>
+<script src="https://unpkg.com/vue-resource/dist/vue-resource.js" type="text/javascript"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ethjs@0.3.0/dist/ethjs.min.js"></script>
 
 <script>
@@ -120,22 +123,48 @@
                 });
             });
 
-            this.knownOriginDigitalAsset.totalSupply().then(function (result) {
-                var totalSupply = result[0].toString();
-                var totalSupplyArray = new Array(parseInt(totalSupply));
+            function findPriceInGBP(totalEther) {
+                // TODO is the how you access http service?
+                return this.Vue.http.get('https://api.coinmarketcap.com/v1/ticker/ethereum/?convert=GBP')
+                    .then((response) => {
 
-                for (var i = 0; i < totalSupplyArray.length; i++) {
+                        let responseBody = response.body;
+                        let currentPriceOfOneEtherInGbp = responseBody[0].price_gbp;
+
+                        let result =  currentPriceOfOneEtherInGbp * totalEther;
+                        return result;
+                    }, (response) => {
+                        console.error(response);
+                    });
+
+            }
+
+            this.knownOriginDigitalAsset.totalSupply().then(function (result) {
+                let totalSupply = result[0].toString();
+                let totalSupplyArray = new Array(parseInt(totalSupply));
+
+                for (let i = 0; i < totalSupplyArray.length; i++) {
                     that.knownOriginDigitalAsset.assetInfo(i).then(function (result) {
                         console.log(result);
 
-                        that.kodas.push({
-                            'tokenId': result[0].toString(),
-                            'owner': result[1].toString(),
-                            'edition': result[3].toString(),
-                            'sold': result[4].toString(),
-                            'priceInWei':result[5].toString(),
-                            'metadata': "https://ipfs.infura.io/ipfs/" + result[2].toString()
-                        });
+                        let priceInWei = result[5];
+                        let priceInEther = Eth.fromWei(priceInWei, 'ether');
+
+                        // TODO I would ideally like to bind the properly the promise but couldn't this
+                        findPriceInGBP(priceInEther)
+                            .then((priceInGBP) => {
+
+                                that.kodas.push({
+                                    'tokenId': result[0].toString(),
+                                    'owner': result[1].toString(),
+                                    'edition': result[3].toString(),
+                                    'sold': result[4].toString(),
+                                    'priceInWei': priceInWei.toString(),
+                                    'priceInEther': priceInEther,
+                                    'priceInGBP': priceInGBP,
+                                    'metadata': "https://ipfs.infura.io/ipfs/" + result[2].toString()
+                                });
+                            });
                     });
                 }
             });
@@ -145,5 +174,3 @@
 </body>
 
 </html>
-
-<!--                        liEl += '<br/><img class="metadata" src="https://ipfs.infura.io/ipfs/' + result[2].toString() + '"/>'; -->
